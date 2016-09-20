@@ -1,0 +1,1 @@
+My notes, code and exercises produced while studying "Haskell Programming from first principles".
