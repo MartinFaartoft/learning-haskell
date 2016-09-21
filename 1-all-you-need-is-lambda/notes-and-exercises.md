@@ -14,13 +14,13 @@ Apply λ-function to an argument - eliminate head and replace all instances of b
 
     λx.x z 
            head is eliminated and body replaced with input expression (z)
-      => z 
+         z 
 
 Another λ-function can be the argument
 
     (λx.x) (λy.y)
     [x := (λy.y)] - x parameter is bound to input value
-         => λy.y
+            λy.y
 
 Ran out of arguments, so cannot apply `λy.y` to anything.
 
@@ -36,9 +36,9 @@ Reduuuuuuce
 
     ((λx.x) (λy.y)) z
         [x := (λy.y)]
-          => (λy.y) z
+             (λy.y) z
              [y := z]
-                 => z
+                    z
 
 Reduction stops when there are no more heads left to eliminate, or no more arguments to apply functions to.
 
@@ -52,7 +52,7 @@ variable in body that are not mentioned in head are 'free'
 
      λx.xy z
     [x := z]
-       => zy - cannot apply z to y, since we know nothing about either
+          zy - cannot apply z to y, since we know nothing about either
 
 &alpha; equivalence does not apply to free variables
 
@@ -64,35 +64,35 @@ Each lambda can only bind one parameter and accept only one argument. Multiple a
     λxy.xy is shorthand for λx.(λy.xy)
 
            (λxy.xy) z q
-    => (λx.(λy.xy)) z q - write as nested λ's
+       (λx.(λy.xy)) z q - write as nested λ's
                [x := z]
-           => (λy.zy) q - eliminating outer head, replacing x
+              (λy.zy) q - eliminating outer head, replacing x
                [y := q]
-                 => z q - eliminating remaining head, replacing y
+                    z q - eliminating remaining head, replacing y
 
 Again with more interesting values
 
            (λxy.xy) (λz.a) q
-    => (λx.(λy.xy)) (λz.a) q
+       (λx.(λy.xy)) (λz.a) q
                [x := (λz.a)]
-          => (λy.(λz.a) y) q
+             (λy.(λz.a) y) q
                     [y := q]
-                 => (λz.a) q - one more application possible
+                    (λz.a) q - one more application possible
                     [z := q] - no z in body of function to replace
-                        => a
+                           a
 
 More complicated example
     
           (λxyz.xz(yz))(λmn.m)(λp.p)
     (λx.λy.λz.xz(yz))(λm.λn.m)(λp.p) - explicit Currying
                       [x := λm.λn.m]
-     => (λy.λz.(λm.λn.m)z(yz))(λp.p)
+        (λy.λz.(λm.λn.m)z(yz))(λp.p)
                        [y := (λp.p)]
-         => λz.(λm.λn.m)(z)((λp.p)z) - cannot apply outermost lambda, no argument to apply to
+            λz.(λm.λn.m)(z)((λp.p)z) - cannot apply outermost lambda, no argument to apply to
                             [m := z] - digging into inner lambda to find something reducible
-               => λz.(λn.z)((λp.p)z)
+                  λz.(λn.z)((λp.p)z)
                     [n := ((λp.p)z)]
-                             => λz.z - no n's left in body, so entire argument is tossed out
+                                λz.z - no n's left in body, so entire argument is tossed out
 
 ## Equivalence Exercises
     
@@ -136,7 +136,7 @@ Some lambda terms refuse to reduce fully - meaning that the reduction process ne
 
         (λx.xx)(λx.xx)
         [x := (λx.xx)]
-     => (λx.xx)(λx.xx) - Back where we started, divergence (called omega)
+        (λx.xx)(λx.xx) - Back where we started, divergence (called omega)
 
 ## Summary
 
@@ -169,9 +169,81 @@ Diverges?
 &beta; reduce
 
     1) (λabc.cba)zz(λwv.w)
+
+    (λa.(λb.(λc.cba)))zz(λw.(λv.w)) - explicit Currying 
+                           [a := z]
+          (λb.(λc.cbz))z(λw.(λv.w))
+                           [b := z]                                     
+                (λc.czz)(λw.(λv.w))
+                 [c := ((λw.(λv.w))
+                      (λw.(λv.w))zz
+                           [w := z]
+                            (λv.z)z
+                           [v := z]
+                                  z                                                       
+
     2) (λx.λy.xyy)(λa.a)b
+
+    (λx.λy.xyy)(λa.a)b
+         [x := (λa.a)]
+        (λy.(λa.a)yy)b
+              [y := b]
+              (λa.a)bb
+              [a := b]
+                    bb                 
+
     3) (λy.y)(λx.xx)(λz.zq)
-    4) (λz.z)(λz.zz)(λz.zy) (hint: alpha equivalence)
+
+    (λy.y)(λx.xx)(λz.zq)
+          [y := (λx.xx)]
+          (λx.xx)(λz.zq)
+          [x := (λz.zq)]
+          (λz.zq)(λz.zq)
+          [z := (λz.zq)]
+                (λz.zq)q
+                [z := q]
+                      qq
+
+    4) (λz.z)(λz.zz)(λz.zy) (hint: alpha equivalence - not sure what to use the hint for though)
+
+    (λz.z)(λz.zz)(λz.zy)
+          [z := (λz.zz)]
+          (λz.zz)(λz.zy)
+          [z := (λz.zy)]
+          (λz.zy)(λz.zy)
+          [z := (λz.zy)]
+                (λz.zy)y
+                [z := y]
+                      yy
+
     5) (λx.λy.xyy)(λy.y)y
-    6) (λ<l>a.aa</l>)(λb.ba)c
+
+    (λx.λy.xyy)(λy.y)y
+         [x := (λy.y)]
+        (λy.(λy.y)yy)y
+              [y := y]
+             (λy.y)yy)
+              [y := y]
+                    yy
+
+    6) (λa.aa)(λb.ba)c
+
+    (λa.aa)(λb.ba)c
+     [a := (λb.ba)]
+    (λb.ba)(λb.ba)c
+     [b := (λb.ba)]
+          (λb.ba)ac
+           [b := a]
+                aac
+
     7) (λxyz.xz(yz))(λx.z)(λx.a)
+
+    (λx.λy.λz.xz(yz))(λx.z)(λx.a) - explicit Currying
+                   [x := (λx.z')] - rename leftmost z to z' for clarity
+     (λy.λz'.(λx.z)z'(yz'))(λx.a)
+                    [y := (λx.a)]
+         (λz'.(λx.z)z'((λx.a)z'))
+                        [x := z'] - inner
+                (λz'.z((λx.a)z'))
+                        [x := z'] - inner again                             
+                         (λz'.za)                             
