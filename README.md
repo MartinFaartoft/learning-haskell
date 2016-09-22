@@ -3,4 +3,5 @@ My notes, code and exercises produced while studying "Haskell Programming from f
 ## Chapters
 
 - [x] 1 - All you need is Lambda
-- [ ] 2 - Hello, Haskell!
+- [x] 2 - Hello, Haskell!
+- [ ] 3 - Strings

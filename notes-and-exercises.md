@@ -1,3 +1,11 @@
+# Notes and Exercises for "Haskell Programming from first principles"
+
+# Contents
+
+[1 - All you need is lambda](#chapter-1)  
+[2 - Hello, Haskell!](#chapter-2)  
+
+<a name="chapter-1"></a>
 # 1 - All you need is lambda
 
     λ x . x
@@ -20,7 +28,7 @@ Another λ-function can be the argument
 
     (λx.x) (λy.y)
     [x := (λy.y)] - x parameter is bound to input value
-            λy.y
+             λy.y
 
 Ran out of arguments, so cannot apply `λy.y` to anything.
 
@@ -247,3 +255,138 @@ Diverges?
                 (λz'.z((λx.a)z'))
                         [x := z'] - inner again                             
                          (λz'.za)                             
+
+<a name="chapter-2"></a>
+# 2 - Hello, Haskell!
+
+Everything is an expression or declaration
+
+expressions may be values, combinations of values and/or functions applied to values
+
+declarations are top-level bindings for naming expressions (more later)
+
+## Functions
+
+Declaring a function: (prefix with `let` in REPL)
+
+    myFunc x = x + 1
+
+Function names are camelCase
+
+calling (prefix) functions:
+
+    myFunc 1
+
+    => 2
+
+args follow the function name, separated by space
+
+Haskell does not reduce completely to Normal Form, but only to 'Weak head normal form' (whatever that is - more later!)
+
+## Infix
+
+Functions with alphanumeric names are prefix by default, if the name is a symbol it is infix by default.
+
+    myFunc 1 --myFunc is prefix
+
+    1 + 1 -- + is infix
+
+Wrap infix function in parens to convert to prefix
+
+    (+) 1 1
+
+Sometimes prefix functions will work as infix when wrapped in backticks
+
+    10 `div` 4 
+
+## Associativity and precedence
+
+Infix operators have precendence, query with :info in REPL
+
+    :info (*)
+    infixl 7 * -- left associative infix, precedence 7 (higher is evaluated first)
+
+    :info (+)
+    infixl 6 +
+
+    :info (^)
+    infixr 8 ^ -- right associative infix, higher precendence than *
+
+The `$` function can be used to 'clean' up parens heavy expressions
+
+    :info ($)
+    infixr 0 $ -- lowest possible precedence
+
+    (2^) (2 + 2) -- is equivalent to
+    (2^) $ 2 + 2
+
+## Whitespace matters
+
+All top level declarations in a source file must start on the same column
+
+    -- test.hs
+
+    module Test where
+
+    a = 1
+     b = 2 -- compiler error
+
+## Sectioning (partial application)
+
+    (+1) 2 -- (+1) evaluates to a partially applied + operation
+    => 3
+
+Watch out for ordering
+
+    (1/) 2
+    => 0.5
+
+    (/1) 2
+    => 2.0
+
+## Let and Where
+
+`let` introduces an expression, but `where` is a declaration and is bound to a surrounding syntactic construct (whatever that is).
+
+    printInc n = print plusTwo
+      where plusTwo = n + 2
+    
+    -- is equivalent to
+
+    printInc n = let plusTwo = n + 2
+                 in print plusTwo
+
+## Chapter Exercises
+
+Make expressions more explicit with parens
+
+    1) 2 + 2 * 3 - 1
+       2 + (2 * 3) - 1
+
+    2) (^) 10 $ 1 + 1
+       (^) 10 (1 + 1)
+
+    3) 2 ^ 2 * 4 ^ 5 + 1
+       (2 ^ 2) * (4 ^ 5) + 1
+
+Determine if expressions are equivalent
+
+    1) 1 + 1 
+       2
+       equivalent
+
+    2) 10 ^ 2
+       10 + 9 * 10
+       equivalent
+
+    3) 400 - 37
+       (-) 37 400
+       not equivalent, arguments switched
+
+    4) 100 `div` 3
+       100 / 3
+       not equivalent integer division vs floating point division
+    
+    5) 2 * 5 + 18
+       2 * (5 + 18)
+       not equivalent, parens overrides precedence rules
